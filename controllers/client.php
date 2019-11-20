@@ -1,11 +1,15 @@
 <?php
 
 namespace controllers {
-
-    use Slim\Http\Request;
-
+    /*
+	Classe Client
+	*/
     class Client
     {
+        /*
+		getStatus()
+		Verifica os status dos serviços da total voice
+		*/
         public function getStatus()
         {
             global $app;
@@ -24,7 +28,7 @@ namespace controllers {
                 $out = "GET /status HTTP/1.1\r\n";
                 $out .= "Content-Type: application/json\r\n";
                 $out .= "Host: api.totalvoice.com.br\r\n";
-                $out .= "Access-Token: b484beb28b15f70e7544607e03aedb65\r\n";
+                $out .= "Access-Token: b484beb28b15f70e7544607e03aedb65\r\n"; // Token gerado pelo site da Total Voice
                 $out .= "Connection: Close\r\n\r\n";
 
                 fwrite($socket, $out);
@@ -38,12 +42,17 @@ namespace controllers {
                 $app->render('default.php', ["data" => $response[9]], 200);
             }
         }
-
+        /*
+		validaNumero()
+		
+		*/
         public function validaNumero()
         {
             global $app;
             $app->response()->header('Content-Type', 'application/json;charset=utf-8');
-            $post_data = explode("=",$app->request->getBody());
+            // Recebe apenas o numero de telefone digitado 
+            $post_data = explode("=", $app->request->getBody());
+            // Transforma em padrão JSON para enviar
             $jsonData = "{  \"numero_destino\" : \"$post_data[1]\"  }";
             //Pegando Endereço IP do Host
             $address = gethostbyname('api.totalvoice.com.br');
@@ -60,9 +69,9 @@ namespace controllers {
                 $out .= "Accept: application/json\r\n";
                 $out .= "Host: api.totalvoice.com.br\r\n";
                 $out .= "Content-length: " . strlen($jsonData) . "\r\n";
-                $out .= "Access-Token: b484beb28b15f70e7544607e03aedb65\r\n";
+                $out .= "Access-Token: b484beb28b15f70e7544607e03aedb65\r\n"; // Token gerado pelo site da Total Voice
                 $out .= "Connection: Close\r\n\r\n";
-                $out .=  $jsonData. "\r\n";
+                $out .=  $jsonData . "\r\n";
 
                 fwrite($socket, $out);
                 while (!feof($socket)) {
@@ -71,7 +80,7 @@ namespace controllers {
                 fclose($socket);
                 //Tranformando em Array o cabeçalho enviado pelo Apache
                 $response = explode("\r\n", $result);
-                //Envia apenas o JSON do status
+                //Envia apenas o JSON retornado
                 $app->render('default.php', ["data" => $response[9]], 200);
             }
         }

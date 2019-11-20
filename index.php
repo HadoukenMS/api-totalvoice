@@ -3,7 +3,6 @@
 //Autoload
 $loader = require 'vendor/autoload.php';
 
-//Instanciando objeto
 $app = new \Slim\Slim(array(
     'templates.path' => 'templates'
 ));
